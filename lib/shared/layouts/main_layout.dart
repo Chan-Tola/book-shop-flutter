@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/author/ui/author_list_screen.dart';
+import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -14,8 +15,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   // List of screens for the navigation bar
   final List<Widget> _screens = const [
-    Center(child: Text("HOME/BOOKS")), // Replace with BookHomeScreen()
+    HomeScreen(),
     AuthorListScreen(),
+    Center(child: Text("CART")),
+    Center(child: Text("FAVORITES")),
     ProfileScreen(),
   ];
 
@@ -54,15 +57,21 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       child: Row(
         children: [
-          _buildNavItem(icon: Icons.grid_view_rounded, index: 0),
-          _buildNavItem(icon: Icons.person_search_outlined, index: 1),
-          _buildNavItem(icon: Icons.account_circle_outlined, index: 2),
+          _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
+          _buildNavItem(icon: Icons.search_rounded, index: 1),
+          _buildNavItem(icon: Icons.shopping_bag_outlined, index: 2),
+          _buildNavItem(icon: Icons.favorite_border_rounded, index: 3),
+          _buildNavItem(icon: Icons.person_outline_rounded, index: 4),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem({required IconData icon, required int index}) {
+  Widget _buildNavItem({
+    required IconData icon,
+    required int index,
+    String? label,
+  }) {
     final isSelected = _selectedIndex == index;
 
     return Expanded(
@@ -72,16 +81,31 @@ class _MainLayoutState extends State<MainLayout> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isSelected
-                ? Colors.blue.withOpacity(0.12)
-                : Colors.transparent,
+            color: isSelected ? const Color(0xFF1B6EF3) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Icon(
-            icon,
-            color: isSelected ? const Color(0xFF0066FF) : Colors.grey.shade400,
-            size: 28,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? Colors.white : Colors.grey.shade400,
+                size: 24,
+              ),
+              if (isSelected && label != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

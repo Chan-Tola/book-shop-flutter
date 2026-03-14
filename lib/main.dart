@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Import Features
 import 'features/auth/logic/auth_provider.dart';
 import 'features/auth/ui/login_screen.dart';
+import 'features/book/logic/book_provider.dart';
 
 // Import Shared Layout
 import 'shared/layouts/main_layout.dart';
@@ -20,6 +21,7 @@ void main() {
       providers: [
         // AuthProvider is initialized here and available globally
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => BookProvider()),
       ],
       child: const BookShopApp(),
     ),

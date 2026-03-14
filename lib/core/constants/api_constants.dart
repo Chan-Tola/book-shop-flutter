@@ -7,5 +7,5 @@ class ApiConstants {
   static const String logout = "/auth/logout";
   static const String categories = "/categories";
   static const String authors = "/authors";
-  // static const String books = "/books";
+  static const String books = "/books";
 }
