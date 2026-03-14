@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../logic/auth_provider.dart';
-import '../../../shared/layouts/main_layout.dart';
 import '../../../shared/widgets/custom_input.dart';
+import '../../../shared/widgets/global_toast.dart';
+import '../../../shared/layouts/main_layout.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -220,6 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             _nameController.text,
                                             _emailController.text,
                                             _passwordController.text,
+                                            context: context,
                                           );
                                           if (auth.user != null && mounted) {
                                             Navigator.pushAndRemoveUntil(
@@ -233,15 +235,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           }
                                         } catch (e) {
                                           if (!mounted) return;
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              backgroundColor: Colors.red,
-                                              content: Text(
-                                                "REGISTER FAILED: $e",
-                                              ),
-                                            ),
+                                          context.showErrorToast(
+                                            "REGISTER FAILED: $e",
                                           );
                                         }
                                       },

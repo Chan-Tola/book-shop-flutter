@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../logic/book_provider.dart';
+import '../../cart/logic/cart_provider.dart';
+import '../../auth/logic/auth_provider.dart';
+import '../../../shared/widgets/global_toast.dart';
+import 'widgets/book_image_widget.dart';
+import 'widgets/book_info_widget.dart';
+import 'widgets/book_price_widget.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final String bookId;
@@ -12,21 +18,91 @@ class BookDetailScreen extends StatefulWidget {
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
+  bool _isAddingToCart = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<BookProvider>().fetchBookById(widget.bookId);
+      // Initialize cart with user token
+      final authProvider = context.read<AuthProvider>();
+      final cartProvider = context.read<CartProvider>();
+      if (authProvider.user?.token != null) {
+        cartProvider.setToken(authProvider.user!.token!);
+        cartProvider.fetchCart();
+      }
     });
+  }
+
+  Future<void> _addToCart() async {
+    if (_isAddingToCart) return;
+
+    final authProvider = context.read<AuthProvider>();
+    final cartProvider = context.read<CartProvider>();
+
+    // Check if user is authenticated
+    if (authProvider.user?.token == null) {
+      context.showWarningToast('Please login to add items to cart');
+      return;
+    }
+
+    setState(() {
+      _isAddingToCart = true;
+    });
+
+    try {
+      await cartProvider.addToCart(widget.bookId, 1, context: context);
+
+      if (mounted) {
+        context.showSuccessToast('Book added to cart successfully!');
+        setState(() {}); // Rebuild to update button state
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showErrorToast('Failed to add to cart: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAddingToCart = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final bookProvider = context.watch<BookProvider>();
+    final cartProvider = context.watch<CartProvider>();
     final book = bookProvider.selectedBook;
+    final isBookInCart = cartProvider.isItemInCart(widget.bookId);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Book Detail')),
+      backgroundColor: const Color(
+        0xFFF8F9FA,
+      ), // Light background like screenshot
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/');
+            }
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_horiz, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: bookProvider.isLoading
           ? const Center(
               child: SizedBox(
@@ -47,129 +123,81 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             )
           : book == null
           ? const Center(child: Text('Book not found'))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+          : SafeArea(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (book.imageUrl != null && book.imageUrl!.isNotEmpty)
-                    Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          book.imageUrl!,
-                          height: 260,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 260,
-                              width: double.infinity,
-                              color: const Color(0xFFEFF4FF),
-                              alignment: Alignment.center,
-                              child: const Icon(
-                                Icons.broken_image_outlined,
-                                color: Color(0xFF1B6EF3),
-                                size: 40,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 20),
-                  Text(
-                    book.title,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E2A3A),
-                    ),
-                  ),
-                  if (book.author != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Row(
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
                         children: [
-                          if (book.authorPhoto != null &&
-                              book.authorPhoto!.isNotEmpty)
-                            CircleAvatar(
-                              radius: 14,
-                              backgroundColor: const Color(0xFFEFF4FF),
-                              backgroundImage: NetworkImage(book.authorPhoto!),
-                            )
-                          else
-                            const CircleAvatar(
-                              radius: 14,
-                              backgroundColor: Color(0xFFEFF4FF),
-                              child: Icon(
-                                Icons.person,
-                                size: 16,
-                                color: Color(0xFF1B6EF3),
-                              ),
-                            ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Author: ${book.author!}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF7A8699),
-                              ),
-                            ),
+                          // 1. Book Image Gallery
+                          BookImageWidget(
+                            imageUrl: book.imageUrl,
+                            galleryImages: book.images,
                           ),
+
+                          const SizedBox(height: 40),
+
+                          // 2. Book Info (Title, Author, Stock, Description)
+                          BookInfoWidget(
+                            title: book.title,
+                            author: book.author,
+                            description: book.description,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // 3. Price (Optional, kept subtle)
+                          if (book.price != null)
+                            BookPriceWidget(price: book.price),
+
+                          const SizedBox(height: 30),
                         ],
                       ),
                     ),
-                  if (book.category != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Category: ${book.category!}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF7A8699),
+                  ),
+
+                  // 4. Action Button "Get the Book"
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 34),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: (_isAddingToCart || isBookInCart)
+                            ? null
+                            : _addToCart,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                            0xFF111111,
+                          ), // Black button
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: Colors.grey.shade400,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  if (book.price != null)
-                    Text(
-                      '\$${book.price!.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1B6EF3),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  if (book.description != null)
-                    Text(
-                      book.description!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF1E2A3A),
-                        height: 1.5,
-                      ),
-                    ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: null, // TODO: Implement purchase
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1B6EF3),
-                        disabledBackgroundColor: const Color(0xFF1B6EF3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        child: _isAddingToCart
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                isBookInCart ? 'In Your Cart' : 'Get the Book',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                       ),
                     ),
                   ),

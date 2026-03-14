@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../data/services/auth_service.dart';
 import '../data/models/user_model.dart';
+import '../../../shared/widgets/global_loading.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -14,9 +15,18 @@ class AuthProvider extends ChangeNotifier {
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(
+    String email,
+    String password, {
+    BuildContext? context,
+  }) async {
     _isLoading = true;
     notifyListeners();
+
+    // Show global loading
+    if (context != null) {
+      GlobalLoading.show(context, message: 'Signing in...');
+    }
 
     try {
       _user = await _authService.login(email, password);
@@ -26,13 +36,27 @@ class AuthProvider extends ChangeNotifier {
       }
     } finally {
       _isLoading = false;
+      // Hide global loading
+      if (context != null) {
+        GlobalLoading.hide();
+      }
       notifyListeners();
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password, {
+    BuildContext? context,
+  }) async {
     _isLoading = true;
     notifyListeners();
+
+    // Show global loading
+    if (context != null) {
+      GlobalLoading.show(context, message: 'Creating account...');
+    }
 
     try {
       _user = await _authService.register(name, email, password);
@@ -41,11 +65,20 @@ class AuthProvider extends ChangeNotifier {
       }
     } finally {
       _isLoading = false;
+      // Hide global loading
+      if (context != null) {
+        GlobalLoading.hide();
+      }
       notifyListeners();
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout({BuildContext? context}) async {
+    // Show global loading
+    if (context != null) {
+      GlobalLoading.show(context, message: 'Signing out...');
+    }
+
     final token = await _storage.read(key: 'jwt_token');
     if (token != null && token.isNotEmpty) {
       try {
@@ -56,6 +89,12 @@ class AuthProvider extends ChangeNotifier {
     }
     await _storage.delete(key: 'jwt_token');
     _user = null;
+
+    // Hide global loading
+    if (context != null) {
+      GlobalLoading.hide();
+    }
+
     notifyListeners();
   }
 

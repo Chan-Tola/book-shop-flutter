@@ -30,20 +30,24 @@ class HeaderWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _CircleIconButton(
-              icon: Icons.search_rounded,
-              onPressed: onSearchPressed,
-            ),
-            const SizedBox(width: 8),
-            _CircleIconButton(
-              icon: Icons.notifications_none_rounded,
-              onPressed: onNotificationPressed,
-            ),
-          ],
-        ),
+        if (onSearchPressed != null || onNotificationPressed != null)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onSearchPressed != null)
+                _CircleIconButton(
+                  icon: Icons.search_rounded,
+                  onPressed: onSearchPressed,
+                ),
+              if (onSearchPressed != null && onNotificationPressed != null)
+                const SizedBox(width: 8),
+              if (onNotificationPressed != null)
+                _CircleIconButton(
+                  icon: Icons.notifications_none_rounded,
+                  onPressed: onNotificationPressed,
+                ),
+            ],
+          ),
       ],
     );
   }

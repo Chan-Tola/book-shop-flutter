@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../auth/logic/auth_provider.dart';
+import '../../../shared/layouts/main_layout.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,52 +10,76 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Access the provider but don't 'watch' it (we just need the logout function)
     final authProvider = context.read<AuthProvider>();
-    final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          "Profile",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          "Settings",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainLayout()),
+              );
+            }
+          },
+        ),
       ),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 10),
         children: [
-          const SizedBox(height: 20),
-          // User Info Section
-          const CircleAvatar(
-            radius: 50,
-            backgroundColor: Color(0xFFEFF4FF),
-            child: Icon(Icons.person, size: 50, color: Color(0xFF1B6EF3)),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            user?.email ?? "User Session",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 30),
-
-          // Action List
-          _buildProfileTile(
-            icon: Icons.settings_outlined,
-            title: "Settings",
+          _buildSettingsTile(
+            icon: Icons.person_outline_rounded,
+            title: "Account",
             onTap: () {},
           ),
-          _buildProfileTile(
-            icon: Icons.history,
-            title: "Order History",
-            onTap: () {},
-          ),
-          const Divider(indent: 20, endIndent: 20),
-
-          // --- THE LOGOUT BUTTON ---
-          _buildProfileTile(
+          // _buildSettingsTile(
+          //   icon: Icons.notifications_none_rounded,
+          //   title: "Notification",
+          //   onTap: () {},
+          // ),
+          // _buildSettingsTile(
+          //   icon: Icons.monitor_outlined,
+          //   title: "Display",
+          //   onTap: () {},
+          // ),
+          // _buildSettingsTile(
+          //   icon: Icons.lock_outline_rounded,
+          //   title: "Privacy",
+          //   onTap: () {},
+          // ),J
+          // _buildSettingsTile(
+          //   icon: Icons.credit_card_outlined,
+          //   title: "Payment",
+          //   onTap: () {},
+          // ),
+          // _buildSettingsTile(
+          //   icon: Icons.language_outlined,
+          //   title: "Language",
+          //   onTap: () {},
+          // ),
+          // _buildSettingsTile(
+          //   icon: Icons.error_outline_rounded, // Exclamation in circle
+          //   title: "Help",
+          //   onTap: () {},
+          // ),
+          _buildSettingsTile(
             icon: Icons.logout_rounded,
             title: "Logout",
-            color: Colors.redAccent, // Red to signal exit
             onTap: () => _showLogoutDialog(context, authProvider),
           ),
         ],
@@ -62,23 +87,26 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper for consistent list items
-  Widget _buildProfileTile({
+  Widget _buildSettingsTile({
     required IconData icon,
     required String title,
     required VoidCallback onTap,
-    Color color = const Color(0xFF1E2A3A),
   }) {
     return ListTile(
-      leading: Icon(icon, color: color),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      leading: Icon(icon, color: Colors.black87, size: 26),
       title: Text(
         title,
-        style: TextStyle(color: color, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
       ),
       trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 14,
-        color: Colors.grey,
+        Icons.arrow_forward_ios_rounded,
+        size: 16,
+        color: Colors.black54,
       ),
       onTap: onTap,
     );
@@ -100,7 +128,9 @@ class ProfileScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close dialog
-              auth.logout(); // This triggers the automatic navigation back to Login
+              auth.logout(
+                context: context,
+              ); // This triggers the automatic navigation back to Login
             },
             child: const Text("Logout", style: TextStyle(color: Colors.red)),
           ),

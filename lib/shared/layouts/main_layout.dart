@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../features/author/ui/author_list_screen.dart';
+import '../../features/cart/ui/cart_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/profile_screen.dart';
 
@@ -16,9 +16,8 @@ class _MainLayoutState extends State<MainLayout> {
   // List of screens for the navigation bar
   final List<Widget> _screens = const [
     HomeScreen(),
-    AuthorListScreen(),
-    Center(child: Text("CART")),
-    Center(child: Text("FAVORITES")),
+    CartScreen(),
+    Center(child: Text("ORDER HISTORY")),
     ProfileScreen(),
   ];
 
@@ -58,10 +57,9 @@ class _MainLayoutState extends State<MainLayout> {
       child: Row(
         children: [
           _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
-          _buildNavItem(icon: Icons.search_rounded, index: 1),
-          _buildNavItem(icon: Icons.shopping_bag_outlined, index: 2),
-          _buildNavItem(icon: Icons.favorite_border_rounded, index: 3),
-          _buildNavItem(icon: Icons.person_outline_rounded, index: 4),
+          _buildNavItem(icon: Icons.shopping_bag_outlined, index: 1),
+          _buildNavItem(icon: Icons.history_rounded, index: 2),
+          _buildNavItem(icon: Icons.person_outline_rounded, index: 3),
         ],
       ),
     );

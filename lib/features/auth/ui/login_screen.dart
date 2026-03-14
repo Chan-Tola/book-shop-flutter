@@ -177,6 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () => auth.login(
                                     _emailController.text,
                                     _passwordController.text,
+                                    context: context,
                                   ),
                                   child: const Text('Login'),
                                 ),

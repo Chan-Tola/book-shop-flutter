@@ -1,74 +1,103 @@
 import 'package:flutter/material.dart';
-import '../../data/models/book_model.dart';
 
 class BookInfoWidget extends StatelessWidget {
-  final BookModel book;
+  final String title;
+  final String? author;
+  final String? description;
 
-  const BookInfoWidget({super.key, required this.book});
+  const BookInfoWidget({
+    super.key,
+    required this.title,
+    this.author,
+    this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          book.title,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1E2A3A),
+        // Title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              fontFamily:
+                  'Serif', // Fallback to serif if custom font not available
+              color: Color(0xFF1E2A3A),
+              letterSpacing: -0.5,
+              height: 1.2,
+            ),
           ),
         ),
-        if (book.author != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Row(
-              children: [
-                if (book.authorPhoto != null && book.authorPhoto!.isNotEmpty)
-                  CircleAvatar(
-                    radius: 14,
-                    backgroundColor: const Color(0xFFEFF4FF),
-                    backgroundImage: NetworkImage(book.authorPhoto!),
-                  )
-                else
-                  const CircleAvatar(
-                    radius: 14,
-                    backgroundColor: Color(0xFFEFF4FF),
-                    child: Icon(
-                      Icons.person,
-                      size: 16,
-                      color: Color(0xFF1B6EF3),
-                    ),
-                  ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Author: ${book.author!}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF7A8699),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        if (book.category != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              'Category: ${book.category!}',
-              style: const TextStyle(fontSize: 14, color: Color(0xFF7A8699)),
-            ),
-          ),
-        const SizedBox(height: 12),
-        if (book.description != null)
+        const SizedBox(height: 8),
+
+        // Author
+        if (author != null)
           Text(
-            book.description!,
+            author!,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,
-              color: Color(0xFF1E2A3A),
-              height: 1.5,
+              color: Color(0xFF9CA3AF), // Light grey
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+
+        // Stock Indicator
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 50,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF4CAF50),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Container(
+              width: 30,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'In Stock',
+              style: TextStyle(
+                color: Color(0xFF4CAF50),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        // Description
+        if (description != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              description!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Color(0xFF6B7280),
+                height: 1.6,
+              ),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
       ],

@@ -8,4 +8,5 @@ class ApiConstants {
   static const String categories = "/categories";
   static const String authors = "/authors";
   static const String books = "/books";
+  static const String cart = "/carts";
 }

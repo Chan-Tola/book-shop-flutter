@@ -39,35 +39,21 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             HeaderWidget(
               title: 'Digital-Book',
-              onSearchPressed: () {
-                // TODO: Implement search functionality
-              },
-              onNotificationPressed: () {
-                // TODO: Implement notification functionality
-              },
+              // onSearchPressed: () {
+              //   // TODO: Implement search functionality
+              // },
+              // onNotificationPressed: () {
+              //   // TODO: Implement notification functionality
+              // },
             ),
             const SizedBox(height: 16),
-            LocationCardWidget(
-              location: 'Phnom Penh',
-              address: 'Phnom Penh, Cambodia',
-              onChangeLocation: () {
-                // TODO: Implement location change functionality
-              },
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Welcome back',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1E2A3A),
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Browse your next read',
-              style: TextStyle(fontSize: 12, color: Color(0xFF7A8699)),
-            ),
+            // LocationCardWidget(
+            //   location: 'Phnom Penh',
+            //   address: 'Phnom Penh, Cambodia',
+            //   onChangeLocation: () {
+            //     // TODO: Implement location change functionality
+            //   },
+            // ),
             const SizedBox(height: 20),
             PromoBanner(
               title: 'Special Offer!',

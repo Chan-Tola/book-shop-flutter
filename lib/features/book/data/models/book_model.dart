@@ -6,6 +6,7 @@ class BookModel {
   final String? category;
   final double? price;
   final String? imageUrl;
+  final List<String> images;
   final double? rating;
   final String? description;
 
@@ -17,6 +18,7 @@ class BookModel {
     this.category,
     this.price,
     this.imageUrl,
+    this.images = const [],
     this.rating,
     this.description,
   });
@@ -50,6 +52,13 @@ class BookModel {
       return null;
     }
 
+    List<String> _images(dynamic v) {
+      if (v is List) {
+        return v.map((e) => e.toString()).toList();
+      }
+      return const [];
+    }
+
     return BookModel(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       title: (json['title'] ?? json['name'] ?? '').toString(),
@@ -62,6 +71,7 @@ class BookModel {
           json['coverUrl']?.toString() ??
           json['image']?.toString() ??
           _firstImage(json['images']),
+      images: _images(json['images']),
       rating: _toDouble(json['rating']),
       description: json['description']?.toString(),
     );
