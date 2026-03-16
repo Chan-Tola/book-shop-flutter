@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter/foundation.dart';
 
 // Import Core & Theme
 // import 'core/theme/app_theme.dart';
@@ -9,13 +11,21 @@ import 'features/auth/logic/auth_provider.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/book/logic/book_provider.dart';
 import 'features/cart/logic/cart_provider.dart';
+import 'features/order/logic/order_provider.dart';
+import 'features/payment/logic/payment_provider.dart';
+import 'core/constants/api_constants.dart';
 
 // Import Shared Layout
 import 'shared/layouts/main_layout.dart';
 
-void main() {
+Future<void> main() async {
   // Required for accessing platform-specific features like Secure Storage before runApp
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb) {
+    Stripe.publishableKey = ApiConstants.stripePublishableKey;
+    await Stripe.instance.applySettings();
+  }
 
   runApp(
     MultiProvider(
@@ -24,6 +34,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => BookProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => PaymentProvider()),
       ],
       child: const BookShopApp(),
     ),

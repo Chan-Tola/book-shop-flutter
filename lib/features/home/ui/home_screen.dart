@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 90),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

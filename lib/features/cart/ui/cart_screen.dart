@@ -5,6 +5,7 @@ import '../../auth/logic/auth_provider.dart';
 import 'widgets/cart_item_widget.dart';
 import 'widgets/cart_summary_widget.dart';
 import '../../../shared/widgets/global_toast.dart';
+import '../../order/ui/order_checkout_screen.dart';
 import '../../../shared/layouts/main_layout.dart';
 
 class CartScreen extends StatefulWidget {
@@ -221,7 +222,13 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> _navigateToCheckout() async {
-    context.showInfoToast('Checkout feature coming soon!');
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const OrderCheckoutScreen()),
+    );
+
+    if (result != null && mounted) {
+      context.showSuccessToast('Order created. Proceed to payment.');
+    }
   }
 
   void _showRemoveItemDialog(CartProvider cartProvider, String bookId) {

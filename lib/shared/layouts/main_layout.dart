@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../features/cart/ui/cart_screen.dart';
 import '../../features/home/ui/home_screen.dart';
+import '../../features/order/ui/order_screen.dart';
 import '../../features/profile/ui/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -17,7 +18,7 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _screens = const [
     HomeScreen(),
     CartScreen(),
-    Center(child: Text("ORDER HISTORY")),
+    OrderScreen(),
     ProfileScreen(),
   ];
 
@@ -41,26 +42,42 @@ class _MainLayoutState extends State<MainLayout> {
 
   Widget _buildBottomNavBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      height: 70,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 20,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
-          _buildNavItem(icon: Icons.shopping_bag_outlined, index: 1),
-          _buildNavItem(icon: Icons.history_rounded, index: 2),
-          _buildNavItem(icon: Icons.person_outline_rounded, index: 3),
-        ],
+      child: SafeArea(
+        child: Container(
+          height: 70,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
+              _buildNavItem(
+                icon: Icons.shopping_bag_outlined,
+                label: 'Cart',
+                index: 1,
+              ),
+              _buildNavItem(
+                icon: Icons.history_rounded,
+                label: 'Orders',
+                index: 2,
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline_rounded,
+                label: 'Profile',
+                index: 3,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -72,39 +89,39 @@ class _MainLayoutState extends State<MainLayout> {
   }) {
     final isSelected = _selectedIndex == index;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedIndex = index),
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF1B6EF3) : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? Colors.white : Colors.grey.shade400,
-                size: 24,
-              ),
-              if (isSelected && label != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: isSelected
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+            : const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF1B6EF3) : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : Colors.grey.shade500,
+              size: 24,
+            ),
+            if (isSelected && label != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
