@@ -51,7 +51,7 @@ class _OrderScreenState extends State<OrderScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () => orderProvider.fetchMyOrders(),
+            onRefresh: () => orderProvider.fetchMyOrders(forceRefresh: true),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 12),
               itemCount: orderProvider.orders.length,

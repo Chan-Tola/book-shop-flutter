@@ -183,7 +183,7 @@ class _CartScreenState extends State<CartScreen> {
       children: [
         Expanded(
           child: RefreshIndicator(
-            onRefresh: () => cartProvider.fetchCart(),
+            onRefresh: () => cartProvider.fetchCart(forceRefresh: true),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: cartProvider.cart.items.length,

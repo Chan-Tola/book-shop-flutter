@@ -27,10 +27,17 @@ class OrderProvider extends ChangeNotifier {
     int limit = 10,
     String sortBy = 'createdAt',
     String sortOrder = 'desc',
+    bool forceRefresh = false,
   }) async {
     if (_token == null) {
       _error = 'Authentication required';
       notifyListeners();
+      return;
+    }
+
+    // Skip if already loading or if we have data and not forcing refresh
+    if (_isLoading) return;
+    if (!forceRefresh && _orders.isNotEmpty && page == 1) {
       return;
     }
 
@@ -47,6 +54,7 @@ class OrderProvider extends ChangeNotifier {
         sortOrder: sortOrder,
       );
       _orders = result.orders;
+      _error = null;
     } catch (e) {
       _error = e.toString();
       _orders = [];
@@ -56,10 +64,21 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchOrderById(String orderId) async {
+  Future<void> fetchOrderById(
+    String orderId, {
+    bool forceRefresh = false,
+  }) async {
     if (_token == null) {
       _error = 'Authentication required';
       notifyListeners();
+      return;
+    }
+
+    // Skip if already loading or if we already have this order loaded
+    if (_isLoading) return;
+    if (!forceRefresh &&
+        _selectedOrder != null &&
+        _selectedOrder!.id == orderId) {
       return;
     }
 
@@ -69,6 +88,7 @@ class OrderProvider extends ChangeNotifier {
 
     try {
       _selectedOrder = await _orderService.getOrderById(_token!, orderId);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -87,18 +107,18 @@ class OrderProvider extends ChangeNotifier {
       return null;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     if (context != null) {
       GlobalLoading.show(context, message: 'Creating order...');
     }
+
+    _isLoading = true;
+    _error = null;
 
     try {
       final order = await _orderService.createOrder(_token!, shippingAddress);
       _selectedOrder = order;
       _orders = [order, ..._orders.where((o) => o.id != order.id)];
+      _error = null;
       return order;
     } catch (e) {
       _error = e.toString();
@@ -122,18 +142,18 @@ class OrderProvider extends ChangeNotifier {
       return null;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     if (context != null) {
       GlobalLoading.show(context, message: 'Canceling order...');
     }
+
+    _isLoading = true;
+    _error = null;
 
     try {
       final order = await _orderService.cancelOrder(_token!, orderId);
       _selectedOrder = order;
       _orders = _orders.map((o) => o.id == order.id ? order : o).toList();
+      _error = null;
       return order;
     } catch (e) {
       _error = e.toString();

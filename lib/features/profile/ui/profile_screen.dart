@@ -11,23 +11,24 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Access the provider but don't 'watch' it (we just need the logout function)
     final authProvider = context.read<AuthProvider>();
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Settings",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            color: Colors.black,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -52,6 +53,7 @@ class ProfileScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const AccountScreen()),
               );
             },
+            context: context,
           ),
           // _buildSettingsTile(
           //   icon: Icons.notifications_none_rounded,
@@ -87,6 +89,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.logout_rounded,
             title: "Logout",
             onTap: () => _showLogoutDialog(context, authProvider),
+            context: context,
           ),
         ],
       ),
@@ -97,16 +100,18 @@ class ProfileScreen extends StatelessWidget {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    required BuildContext context,
   }) {
+    final theme = Theme.of(context);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      leading: Icon(icon, color: Colors.black87, size: 26),
+      leading: Icon(icon, color: theme.colorScheme.onSurface, size: 26),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Colors.black87,
+          color: theme.colorScheme.onSurface,
         ),
       ),
       trailing: const Icon(

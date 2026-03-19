@@ -19,7 +19,19 @@ class BookProvider extends ChangeNotifier {
     String? title,
     String? author,
     String? category,
+    bool forceRefresh = false,
   }) async {
+    // Skip if already loading
+    if (_isLoading) return;
+    // Only skip if we have data AND not forcing refresh AND no search parameters
+    if (!forceRefresh &&
+        _books.isNotEmpty &&
+        title == null &&
+        author == null &&
+        category == null) {
+      return;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -30,6 +42,7 @@ class BookProvider extends ChangeNotifier {
         author: author,
         category: category,
       );
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -38,13 +51,20 @@ class BookProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchBookById(String id) async {
+  Future<void> fetchBookById(String id, {bool forceRefresh = false}) async {
+    // Skip if already loading or if we already have this book loaded
+    if (_isLoading) return;
+    if (!forceRefresh && _selectedBook != null && _selectedBook!.id == id) {
+      return;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
       _selectedBook = await _bookService.getBookById(id);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {

@@ -4,7 +4,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter/foundation.dart';
 
 // Import Core & Theme
-// import 'core/theme/app_theme.dart';
+import 'core/theme/app_theme.dart';
 
 // Import Features
 import 'features/auth/logic/auth_provider.dart';
@@ -105,8 +105,8 @@ class _BookShopAppState extends State<BookShopApp> {
           title: 'Monolithic Book Shop',
           debugShowCheckedModeBanner: false,
 
-          // Uncomment this once your AppTheme.lightTheme is ready
-          // theme: AppTheme.lightTheme,
+          theme: AppTheme.lightTheme,
+          themeMode: ThemeMode.light,
 
           // GATEKEEPER LOGIC:
           // If auth.user is null, the Gatekeeper stays at Login.

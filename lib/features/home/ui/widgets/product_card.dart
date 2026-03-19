@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductCard extends StatelessWidget {
   final String title;
@@ -76,11 +77,21 @@ class _ProductImage extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: imageUrl == null || imageUrl!.isEmpty
               ? _buildPlaceholder(Icons.menu_book_rounded)
-              : Image.network(
-                  imageUrl!,
+              : CachedNetworkImage(
+                  imageUrl: imageUrl!,
                   width: double.infinity,
                   fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: const Color(0xFF1B6EF3),
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
                     return _buildPlaceholder(Icons.broken_image_outlined);
                   },
                 ),

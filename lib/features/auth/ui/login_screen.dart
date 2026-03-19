@@ -25,15 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF5F9FF), Colors.white],
+            colors: isDark
+                ? const [Color(0xFF0F1115), Color(0xFF151A21)]
+                : const [Color(0xFFF5F9FF), Colors.white],
           ),
         ),
         child: Center(
@@ -48,11 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   constraints: const BoxConstraints(maxWidth: 400),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: theme.colorScheme.surface.withOpacity(0.95),
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
                         blurRadius: 30,
                         offset: const Offset(0, 10),
                       ),
@@ -67,21 +71,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
 
                         // --- HEADER (modern typography) ---
-                        const Text(
+                        Text(
                           'Welcome Back',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.5,
-                            color: Color(0xFF1E2A3A),
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Sign in to continue your journey',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF7A8699),
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
                         ),
                         const SizedBox(height: 32),

@@ -8,6 +8,8 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onStartSearch;
   final VoidCallback onStopSearch;
   final ValueChanged<String> onSubmitSearch;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onClearSearch;
 
   const HeaderWidget({
     super.key,
@@ -18,6 +20,8 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
     required this.onStartSearch,
     required this.onStopSearch,
     required this.onSubmitSearch,
+    this.onChanged,
+    this.onClearSearch,
   });
 
   @override
@@ -25,14 +29,18 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
       titleSpacing: 30,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: isSearching
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: theme.colorScheme.onSurface,
+              ),
               onPressed: onStopSearch,
             )
           : null,
@@ -41,7 +49,7 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
               height: 40,
               margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F3F5),
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextField(
@@ -49,22 +57,37 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
                 focusNode: searchFocusNode,
                 autofocus: true,
                 textInputAction: TextInputAction.search,
-                decoration: const InputDecoration(
-                  hintText: "Search books",
+                decoration: InputDecoration(
+                  hintText: "Search books, author:name, category:name...",
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
                   ),
+                  hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.clear,
+                            size: 20,
+                            color: Colors.grey,
+                          ),
+                          onPressed: onClearSearch,
+                        )
+                      : null,
                 ),
+                onChanged: onChanged,
                 onSubmitted: onSubmitSearch,
               ),
             )
-          : Text(title, style: const TextStyle(color: Color(0xFF1E2A3A))),
+          : Text(
+              title,
+              style: TextStyle(color: theme.colorScheme.onSurface),
+            ),
       actions: [
         if (!isSearching)
           IconButton(
-            icon: const Icon(Icons.search_rounded, color: Colors.black),
+            icon: Icon(Icons.search_rounded, color: theme.colorScheme.onSurface),
             onPressed: onStartSearch,
           ),
       ],

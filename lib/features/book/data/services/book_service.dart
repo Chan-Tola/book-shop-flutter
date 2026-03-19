@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../core/api/dio_client.dart';
 import '../models/book_model.dart';
 
 class BookService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: ApiConstants.baseUrl));
+  final Dio _dio = DioClient.instance;
 
   List<BookModel> _parseBooks(dynamic root) {
     if (root is! Map && root is! List) {

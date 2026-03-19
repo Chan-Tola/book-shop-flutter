@@ -23,10 +23,16 @@ class CartProvider extends ChangeNotifier {
     _token = token;
   }
 
-  Future<void> fetchCart() async {
+  Future<void> fetchCart({bool forceRefresh = false}) async {
     if (_token == null) {
       _error = 'Authentication required';
       notifyListeners();
+      return;
+    }
+
+    // Skip if already loading or if we have data and not forcing refresh
+    if (_isLoading) return;
+    if (!forceRefresh && _cart.items.isNotEmpty) {
       return;
     }
 
@@ -36,6 +42,7 @@ class CartProvider extends ChangeNotifier {
 
     try {
       _cart = await _cartService.getCart(_token!);
+      _error = null;
     } catch (e) {
       _error = e.toString();
       _cart = CartModel(items: [], totalAmount: 0.0, totalItems: 0);
@@ -56,17 +63,17 @@ class CartProvider extends ChangeNotifier {
       return;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     // Show global loading
     if (context != null) {
       GlobalLoading.show(context, message: 'Adding to cart...');
     }
 
+    _isLoading = true;
+    _error = null;
+
     try {
       _cart = await _cartService.addToCart(_token!, bookId, quantity);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -95,14 +102,13 @@ class CartProvider extends ChangeNotifier {
       return;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     // Show global loading
     if (context != null) {
       GlobalLoading.show(context, message: 'Updating cart...');
     }
+
+    _isLoading = true;
+    _error = null;
 
     try {
       final updatedCart = await _cartService.updateCartItem(
@@ -135,6 +141,7 @@ class CartProvider extends ChangeNotifier {
       }).toList();
 
       _cart = updatedCart.copyWith(items: mergedItems);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -154,14 +161,13 @@ class CartProvider extends ChangeNotifier {
       return;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     // Show global loading
     if (context != null) {
       GlobalLoading.show(context, message: 'Removing item...');
     }
+
+    _isLoading = true;
+    _error = null;
 
     try {
       final updatedCart = await _cartService.removeFromCart(_token!, bookId);
@@ -190,6 +196,7 @@ class CartProvider extends ChangeNotifier {
       }).toList();
 
       _cart = updatedCart.copyWith(items: mergedItems);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -209,14 +216,13 @@ class CartProvider extends ChangeNotifier {
       return;
     }
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     // Show global loading
     if (context != null) {
       GlobalLoading.show(context, message: 'Clearing cart...');
     }
+
+    _isLoading = true;
+    _error = null;
 
     try {
       final updatedCart = await _cartService.clearCart(_token!);
@@ -245,6 +251,7 @@ class CartProvider extends ChangeNotifier {
       }).toList();
 
       _cart = updatedCart.copyWith(items: mergedItems);
+      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {

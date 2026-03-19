@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../core/api/dio_client.dart';
 import '../models/payment_model.dart';
 
 class PaymentService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: ApiConstants.baseUrl));
+  final Dio _dio = DioClient.instance;
 
   Future<PaymentIntentInfo> createPaymentIntent(
     String token,

@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../core/api/dio_client.dart';
 import '../models/order_model.dart';
 
 class OrderService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: ApiConstants.baseUrl));
+  final Dio _dio = DioClient.instance;
 
   OrderModel _parseOrder(dynamic root) {
     if (root is! Map) {

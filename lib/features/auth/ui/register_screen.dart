@@ -28,15 +28,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let the gradient show
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF0F5FF), Color(0xFFF7F8FA)],
+            colors: isDark
+                ? const [Color(0xFF0F1115), Color(0xFF151A21)]
+                : const [Color(0xFFF0F5FF), Color(0xFFF7F8FA)],
           ),
         ),
         child: Stack(
@@ -51,14 +55,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: screenHeight * 0.70,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95),
+                  color: theme.colorScheme.surface.withOpacity(0.95),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(50),
                     topRight: Radius.circular(50),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
                       blurRadius: 30,
                       offset: const Offset(0, -5),
                     ),
@@ -77,22 +81,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       children: [
                         // --- MODERN HEADER ---
-                        const Text(
+                        Text(
                           'Create Account',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.5,
-                            color: Color(0xFF1E2A3A),
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Use proper information to continue',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF7A8699),
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
                         ),
                         const SizedBox(height: 32),

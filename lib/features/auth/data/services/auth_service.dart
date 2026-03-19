@@ -1,16 +1,10 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../core/api/dio_client.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      sendTimeout: const Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio = DioClient.instance;
 
   UserModel _parseUser(dynamic root, {String? tokenOverride}) {
     if (root is! Map) {

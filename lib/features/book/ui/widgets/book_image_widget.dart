@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BookImageWidget extends StatefulWidget {
   final String? imageUrl;
@@ -165,30 +166,23 @@ class _BookImageWidgetState extends State<BookImageWidget> {
       );
     }
 
-    return Image.network(
-      imageUrl,
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
+      placeholder: (context, url) => Container(
+        color: const Color(0xFF2D3436),
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white54),
+            strokeWidth: 2,
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) {
         return Container(
           color: const Color(0xFF2D3436),
           child: const Center(
             child: Icon(Icons.broken_image, color: Colors.white54, size: 50),
-          ),
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          color: const Color(0xFF2D3436),
-          child: Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                  : null,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white54),
-              strokeWidth: 2,
-            ),
           ),
         );
       },
