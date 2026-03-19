@@ -4,9 +4,14 @@ import '../../data/models/order_model.dart';
 class OrderCardWidget extends StatelessWidget {
   final OrderModel order;
   final VoidCallback? onPay;
+  final VoidCallback? onDetails;
 
-  const OrderCardWidget({Key? key, required this.order, this.onPay})
-    : super(key: key);
+  const OrderCardWidget({
+    Key? key,
+    required this.order,
+    this.onPay,
+    this.onDetails,
+  }) : super(key: key);
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
@@ -33,7 +38,6 @@ class OrderCardWidget extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -45,93 +49,129 @@ class OrderCardWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                order.orderNumber.isNotEmpty ? order.orderNumber : order.id,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onDetails,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      order.orderNumber.isNotEmpty
+                          ? order.orderNumber
+                          : order.id,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _statusColor(order.status).withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        order.status.toUpperCase(),
+                        style: TextStyle(
+                          color: _statusColor(order.status),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: _statusColor(order.status).withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  order.status.toUpperCase(),
-                  style: TextStyle(
-                    color: _statusColor(order.status),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
+                const SizedBox(height: 8),
+                if (_formatDate(order.createdAt).isNotEmpty)
+                  Text(
+                    _formatDate(order.createdAt),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '$itemCount items',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '\$${order.totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (_formatDate(order.createdAt).isNotEmpty)
-            Text(
-              _formatDate(order.createdAt),
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-            ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '$itemCount items',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                const SizedBox(height: 12),
+                Text(
+                  'Payment: ${order.paymentStatus}',
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
                 ),
-              ),
-              Text(
-                '\$${order.totalPrice.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Payment: ${order.paymentStatus}',
-            style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
-          ),
-          if (order.paymentStatus.toLowerCase() != 'paid' && onPay != null) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 42,
-              child: ElevatedButton(
-                onPressed: onPay,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00C569),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                if (order.paymentStatus.toLowerCase() != 'paid' &&
+                    onPay != null) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: onPay,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00C569),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Pay Now',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Pay Now',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
+                ],
+                // Add visual indicator that card is tappable
+                if (onDetails != null) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Tap for details',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }

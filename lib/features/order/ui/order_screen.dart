@@ -5,6 +5,7 @@ import '../../auth/logic/auth_provider.dart';
 import 'widgets/order_card_widget.dart';
 import '../../payment/ui/payment_screen.dart';
 import '../../../shared/layouts/main_layout.dart';
+import 'order_detail_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({Key? key}) : super(key: key);
@@ -60,6 +61,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 return OrderCardWidget(
                   order: order,
                   onPay: () => _payForOrder(order.id),
+                  onDetails: () => _viewOrderDetails(order.id),
                 );
               },
             ),
@@ -178,5 +180,11 @@ class _OrderScreenState extends State<OrderScreen> {
       final orderProvider = context.read<OrderProvider>();
       orderProvider.fetchMyOrders();
     }
+  }
+
+  void _viewOrderDetails(String orderId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId)),
+    );
   }
 }

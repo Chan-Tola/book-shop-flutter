@@ -3,23 +3,24 @@ import 'package:provider/provider.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter/foundation.dart';
 
-// Import Core & Theme
+// Core & Constants
+import 'core/constants/api_constants.dart';
 import 'core/theme/app_theme.dart';
 
-// Import Features
+// Features Logic
 import 'features/auth/logic/auth_provider.dart';
-import 'features/auth/ui/login_screen.dart';
 import 'features/book/logic/book_provider.dart';
 import 'features/cart/logic/cart_provider.dart';
 import 'features/order/logic/order_provider.dart';
 import 'features/payment/logic/payment_provider.dart';
-import 'core/constants/api_constants.dart';
 
-// Import Shared Layout
+// UI Screens
+import 'features/auth/ui/login_screen.dart';
 import 'shared/layouts/main_layout.dart';
+import 'shared/ui/initializing_screen.dart';
 
 Future<void> main() async {
-  // Required for accessing platform-specific features like Secure Storage before runApp
+  // 1. System Boot
   WidgetsFlutterBinding.ensureInitialized();
 
   if (!kIsWeb) {
@@ -30,7 +31,6 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        // AuthProvider is initialized here and available globally
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => BookProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
@@ -50,70 +50,44 @@ class BookShopApp extends StatefulWidget {
 }
 
 class _BookShopAppState extends State<BookShopApp> {
-  // We store the future in a variable to prevent FutureBuilder from
-  // re-triggering the login check every time the widget rebuilds.
   late Future<void> _initAuthFuture;
 
   @override
   void initState() {
     super.initState();
-    // We call loadCurrentUser once. This checks local storage and the /me endpoint.
+    // Load user session once at startup
     _initAuthFuture = context.read<AuthProvider>().loadCurrentUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    // We 'watch' the AuthProvider so the UI swaps automatically when user logs in/out
-    final auth = context.watch<AuthProvider>();
+    return MaterialApp(
+      title: 'Monolithic Book Shop',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      // Single Entry Point
+      home: FutureBuilder(
+        future: _initAuthFuture,
+        builder: (context, snapshot) {
+          // If still checking JWT, show the Minimalist Loader
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const InitializingScreen();
+          }
 
-    return FutureBuilder(
-      future: _initAuthFuture,
-      builder: (context, snapshot) {
-        // 1. While the app is checking the JWT token...
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(
-              backgroundColor: Colors.white,
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      color: Color(0xFF1B6EF3),
-                      strokeWidth: 3,
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      "INITIALIZING SYSTEM...",
-                      style: TextStyle(
-                        color: Color(0xFF7A8699),
-                        fontSize: 12,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          // Animated Switcher for a smooth fade between Login and Main Dashboard
+          return Consumer<AuthProvider>(
+            builder: (context, auth, _) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                switchInCurve: Curves.easeIn,
+                child: auth.user == null
+                    ? const LoginScreen(key: ValueKey('login'))
+                    : const MainLayout(key: ValueKey('layout')),
+              );
+            },
           );
-        }
-
-        // 2. Once the check is done, show the actual App
-        return MaterialApp(
-          title: 'Monolithic Book Shop',
-          debugShowCheckedModeBanner: false,
-
-          theme: AppTheme.lightTheme,
-          themeMode: ThemeMode.light,
-
-          // GATEKEEPER LOGIC:
-          // If auth.user is null, the Gatekeeper stays at Login.
-          // If auth.user has data, the Gatekeeper opens the MainLayout.
-          home: auth.user == null ? const LoginScreen() : const MainLayout(),
-        );
-      },
+        },
+      ),
     );
   }
 }
