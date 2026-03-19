@@ -3,14 +3,26 @@ import 'package:flutter/material.dart';
 class BookInfoWidget extends StatelessWidget {
   final String title;
   final String? author;
+  final String? authorPhoto;
+  final String? authorWebsite;
   final String? description;
 
   const BookInfoWidget({
     super.key,
     required this.title,
     this.author,
+    this.authorPhoto,
+    this.authorWebsite,
     this.description,
   });
+
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r"\s+"));
+    if (parts.isEmpty) return "";
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +48,55 @@ class BookInfoWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // Author
+        // Author Profile
         if (author != null)
-          Text(
-            author!,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF9CA3AF), // Light grey
-              fontWeight: FontWeight.w400,
-            ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: const Color(0xFFE5E7EB),
+                    backgroundImage: authorPhoto != null
+                        ? NetworkImage(authorPhoto!)
+                        : null,
+                    child: authorPhoto == null
+                        ? Text(
+                            _initials(author!),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF374151),
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        author!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF111827),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (authorWebsite != null)
+                        Text(
+                          authorWebsite!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
 
         // Stock Indicator
@@ -53,24 +104,6 @@ class BookInfoWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 50,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Container(
-              width: 30,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 12),
             const Text(
               'In Stock',
               style: TextStyle(

@@ -143,6 +143,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           BookInfoWidget(
                             title: book.title,
                             author: book.author,
+                            authorPhoto: book.authorPhoto,
+                            authorWebsite: book.authorWebsite,
                             description: book.description,
                           ),
 
@@ -169,9 +171,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             ? null
                             : _addToCart,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFF111111,
-                          ), // Black button
+                          backgroundColor: const Color(0xFF1B6EF3),
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.grey.shade400,
                           elevation: 0,

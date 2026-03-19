@@ -14,7 +14,7 @@ class BookPriceWidget extends StatelessWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF1E2A3A),
+        color: Color.fromARGB(255, 2, 113, 247),
         fontFamily: 'Serif',
       ),
     );

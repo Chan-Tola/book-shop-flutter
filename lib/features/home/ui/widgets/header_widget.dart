@@ -1,86 +1,73 @@
 import 'package:flutter/material.dart';
 
-class HeaderWidget extends StatelessWidget {
+class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback? onSearchPressed;
-  final VoidCallback? onNotificationPressed;
+  final bool isSearching;
+  final TextEditingController searchController;
+  final FocusNode searchFocusNode;
+  final VoidCallback onStartSearch;
+  final VoidCallback onStopSearch;
+  final ValueChanged<String> onSubmitSearch;
 
   const HeaderWidget({
     super.key,
     required this.title,
-    this.onSearchPressed,
-    this.onNotificationPressed,
+    required this.isSearching,
+    required this.searchController,
+    required this.searchFocusNode,
+    required this.onStartSearch,
+    required this.onStopSearch,
+    required this.onSubmitSearch,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1E2A3A),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        if (onSearchPressed != null || onNotificationPressed != null)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (onSearchPressed != null)
-                _CircleIconButton(
-                  icon: Icons.search_rounded,
-                  onPressed: onSearchPressed,
-                ),
-              if (onSearchPressed != null && onNotificationPressed != null)
-                const SizedBox(width: 8),
-              if (onNotificationPressed != null)
-                _CircleIconButton(
-                  icon: Icons.notifications_none_rounded,
-                  onPressed: onNotificationPressed,
-                ),
-            ],
-          ),
-      ],
-    );
-  }
-}
-
-class _CircleIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onPressed;
-
-  const _CircleIconButton({required this.icon, this.onPressed});
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      width: 36,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return AppBar(
+      titleSpacing: 30,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: isSearching
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+              onPressed: onStopSearch,
+            )
+          : null,
+      title: isSearching
+          ? Container(
+              height: 40,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F3F5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextField(
+                controller: searchController,
+                focusNode: searchFocusNode,
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                decoration: const InputDecoration(
+                  hintText: "Search books",
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                ),
+                onSubmitted: onSubmitSearch,
+              ),
+            )
+          : Text(title, style: const TextStyle(color: Color(0xFF1E2A3A))),
+      actions: [
+        if (!isSearching)
+          IconButton(
+            icon: const Icon(Icons.search_rounded, color: Colors.black),
+            onPressed: onStartSearch,
           ),
-        ],
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF1E2A3A)),
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-      ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ class BookModel {
   final String title;
   final String? author;
   final String? authorPhoto;
+  final String? authorWebsite;
   final String? category;
   final double? price;
   final String? imageUrl;
@@ -15,6 +16,7 @@ class BookModel {
     required this.title,
     this.author,
     this.authorPhoto,
+    this.authorWebsite,
     this.category,
     this.price,
     this.imageUrl,
@@ -41,6 +43,11 @@ class BookModel {
       return null;
     }
 
+    String? _authorWebsite(dynamic v) {
+      if (v is Map && v['website'] != null) return v['website'].toString();
+      return null;
+    }
+
     String? _categoryName(dynamic v) {
       if (v is Map && v['name'] != null) return v['name'].toString();
       if (v is String) return v;
@@ -64,6 +71,7 @@ class BookModel {
       title: (json['title'] ?? json['name'] ?? '').toString(),
       author: _authorName(json['author']),
       authorPhoto: _authorPhoto(json['author']),
+      authorWebsite: _authorWebsite(json['author']),
       category: _categoryName(json['category']),
       price: _toDouble(json['price']),
       imageUrl:

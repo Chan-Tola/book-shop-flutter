@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dio/dio.dart';
 import '../data/services/auth_service.dart';
 import '../data/models/user_model.dart';
 import '../../../shared/widgets/global_loading.dart';
+import '../../../shared/widgets/global_toast.dart' hide GlobalLoading;
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -34,6 +36,11 @@ class AuthProvider extends ChangeNotifier {
         // Save token to secure storage
         await _storage.write(key: 'jwt_token', value: _user!.token);
       }
+    } catch (e) {
+      if (context != null) {
+        context.showErrorToast(_extractErrorMessage(e));
+      }
+      rethrow;
     } finally {
       _isLoading = false;
       // Hide global loading
@@ -63,6 +70,11 @@ class AuthProvider extends ChangeNotifier {
       if (_user?.token != null) {
         await _storage.write(key: 'jwt_token', value: _user!.token);
       }
+    } catch (e) {
+      if (context != null) {
+        context.showErrorToast(_extractErrorMessage(e));
+      }
+      rethrow;
     } finally {
       _isLoading = false;
       // Hide global loading
@@ -115,5 +127,25 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  String _extractErrorMessage(Object error) {
+    if (error is DioException) {
+      final status = error.response?.statusCode;
+      if (status == 401) {
+        return "Invalid email or password";
+      }
+      final data = error.response?.data;
+      if (data is Map && data['message'] != null) {
+        return data['message'].toString();
+      }
+      if (data is String && data.trim().isNotEmpty) {
+        return data;
+      }
+      if (error.message != null && error.message!.trim().isNotEmpty) {
+        return error.message!;
+      }
+    }
+    return "Something went wrong. Please try again.";
   }
 }

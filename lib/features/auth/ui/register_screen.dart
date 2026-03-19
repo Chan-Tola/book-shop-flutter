@@ -42,37 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Stack(
           children: [
             // 1. Refined illustration with modern container
-            Positioned(
-              top: screenHeight * 0.08,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  height: 160,
-                  width: 160,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFE6F0FF), Color(0xFFD9E8FF)],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.2),
-                        blurRadius: 25,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.person_add_alt_1_rounded,
-                    size: 90,
-                    color: Colors.blue.shade400,
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox.shrink(),
 
             // 2. Main Content Card – modern, floating, slightly translucent
             Align(
@@ -192,30 +162,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return SizedBox(
                               width: double.infinity,
                               height: 56,
-                              child: auth.isLoading
-                                  ? const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Color(0xFF0066FF),
-                                      ),
-                                    )
-                                  : ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF0066FF,
-                                        ),
-                                        foregroundColor: Colors.white,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            18,
-                                          ),
-                                        ),
-                                        textStyle: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      onPressed: () async {
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0066FF),
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor: const Color(
+                                    0xFF0066FF,
+                                  ),
+                                  disabledForegroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                onPressed: auth.isLoading
+                                    ? null
+                                    : () async {
                                         try {
                                           await auth.register(
                                             _nameController.text,
@@ -240,8 +206,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           );
                                         }
                                       },
-                                      child: const Text('Create Account'),
-                                    ),
+                                child: const Text('Create Account'),
+                              ),
                             );
                           },
                         ),

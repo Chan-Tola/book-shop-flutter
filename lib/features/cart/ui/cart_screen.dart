@@ -164,7 +164,7 @@ class _CartScreenState extends State<CartScreen> {
                   horizontal: 32,
                   vertical: 16,
                 ),
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: const Color(0xFF1B6EF3), // 👈 your color
                 foregroundColor: Colors.white,
               ),
               child: const Text(
@@ -218,13 +218,13 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _navigateToBooks() {
-    Navigator.of(context).pushReplacementNamed('/books');
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   Future<void> _navigateToCheckout() async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const OrderCheckoutScreen()),
-    );
+    final result = await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const OrderCheckoutScreen()));
 
     if (result != null && mounted) {
       context.showSuccessToast('Order created. Proceed to payment.');

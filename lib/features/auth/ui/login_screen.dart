@@ -64,35 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // --- ILLUSTRATION (elevated and refined) ---
-                        Container(
-                          height: 140,
-                          width: 140,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                const Color(0xFFEFF4FF),
-                                Colors.blue.shade50,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(40),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blue.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.person_rounded,
-                            size: 80,
-                            color: Colors.blue.shade300,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 8),
 
                         // --- HEADER (modern typography) ---
                         const Text(
@@ -116,8 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // --- INPUTS (unchanged) ---
                         CustomInput(
-                          hintText: 'Your name',
-                          prefixIcon: Icons.person_outline,
+                          hintText: 'Email address',
+                          prefixIcon: Icons.email_outlined,
                           controller: _emailController,
                         ),
                         const SizedBox(height: 16),
@@ -155,32 +127,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           width: double.infinity,
                           height: 52,
-                          child: auth.isLoading
-                              ? const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Color(0xFF1B6EF3),
-                                  ),
-                                )
-                              : ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF1B6EF3),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    textStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  onPressed: () => auth.login(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1B6EF3),
+                              foregroundColor: Colors.white,
+                              disabledBackgroundColor: const Color(0xFF1B6EF3),
+                              disabledForegroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            onPressed: auth.isLoading
+                                ? null
+                                : () => auth.login(
                                     _emailController.text,
                                     _passwordController.text,
                                     context: context,
                                   ),
-                                  child: const Text('Login'),
-                                ),
+                            child: const Text('Login'),
+                          ),
                         ),
                         const SizedBox(height: 24),
 

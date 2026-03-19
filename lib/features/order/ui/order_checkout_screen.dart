@@ -19,7 +19,7 @@ class _OrderCheckoutScreenState extends State<OrderCheckoutScreen> {
   final _city = TextEditingController();
   final _state = TextEditingController();
   final _zip = TextEditingController();
-  final _country = TextEditingController(text: 'United States');
+  final _country = TextEditingController(text: 'Cambodia');
 
   @override
   void dispose() {
@@ -151,9 +151,7 @@ class _OrderCheckoutScreenState extends State<OrderCheckoutScreen> {
     if (order != null && mounted) {
       context.showSuccessToast('Order created successfully');
       final paid = await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => PaymentScreen(orderId: order.id),
-        ),
+        MaterialPageRoute(builder: (_) => PaymentScreen(orderId: order.id)),
       );
       if (paid == true && mounted) {
         Navigator.pop(context, order);

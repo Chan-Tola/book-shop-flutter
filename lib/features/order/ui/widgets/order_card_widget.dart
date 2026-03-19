@@ -16,7 +16,7 @@ class OrderCardWidget extends StatelessWidget {
         return const Color(0xFFE74C3C);
       case 'pending':
       default:
-        return const Color(0xFFFF9800);
+        return const Color(0xFF4CAF50);
     }
   }
 
@@ -64,7 +64,7 @@ class OrderCardWidget extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: _statusColor(order.status).withOpacity(0.15),
+                  color: _statusColor(order.status).withOpacity(0.25),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

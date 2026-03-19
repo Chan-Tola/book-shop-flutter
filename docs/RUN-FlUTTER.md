@@ -1,4 +1,5 @@
 flutter run -d chrome --web-port 63923
+flutter run -d ce041714f5152f3702
 
 Becuase I have set up CORE in the Cloudflare:
 [

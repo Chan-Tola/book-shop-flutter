@@ -50,9 +50,27 @@ class BookService {
     return BookModel.fromJson(Map<String, dynamic>.from(dataNode));
   }
 
-  Future<List<BookModel>> getBooks() async {
+  Future<List<BookModel>> getBooks({
+    String? title,
+    String? author,
+    String? category,
+  }) async {
     try {
-      final response = await _dio.get(ApiConstants.books);
+      final query = <String, String>{};
+      if (title != null && title.trim().isNotEmpty) {
+        query["title"] = title.trim();
+      }
+      if (author != null && author.trim().isNotEmpty) {
+        query["author"] = author.trim();
+      }
+      if (category != null && category.trim().isNotEmpty) {
+        query["category"] = category.trim();
+      }
+
+      final response = await _dio.get(
+        ApiConstants.books,
+        queryParameters: query.isEmpty ? null : query,
+      );
       if (response.statusCode == 200) {
         return _parseBooks(response.data);
       }

@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 class ApiConstants {
+  // use the wifi
   /// Web can reach localhost, mobile cannot.
   static const String _baseUrlWeb = "http://localhost:3000/api/v1";
 
   /// Default for Android emulator.
   // static const String _baseUrlEmulator = "http://10.0.2.2:3000/api/v1";
-  static const String _baseUrlEmulator = "http://192.168.1.33:3000/api/v1";
+  // static const String _baseUrlEmulator = "http://192.168.1.33:3000/api/v1"; home
+  static const String _baseUrlEmulator =
+      "http://192.168.18.119:3000/api/v1"; // office techey
+  // static const String _baseUrlEmulator = "http://192.168.1.33:3000/api/v1"; // RUPP
 
   /// Optional override for physical devices: pass --dart-define=API_BASE_URL=http://<your-ip>:3000/api/v1
   static const String _baseUrlDefine = String.fromEnvironment('API_BASE_URL');

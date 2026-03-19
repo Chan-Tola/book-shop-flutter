@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../auth/logic/auth_provider.dart';
 import '../../../shared/layouts/main_layout.dart';
+import 'account_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -45,7 +46,12 @@ class ProfileScreen extends StatelessWidget {
           _buildSettingsTile(
             icon: Icons.person_outline_rounded,
             title: "Account",
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AccountScreen()),
+              );
+            },
           ),
           // _buildSettingsTile(
           //   icon: Icons.notifications_none_rounded,
